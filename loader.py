@@ -7,6 +7,7 @@ No other column is consulted for time calculations.
 """
 from __future__ import annotations
 
+import io
 import os
 from pathlib import Path
 from typing import Optional, Union
@@ -59,6 +60,8 @@ def load_data(source: Union[str, Path, bytes, None] = None) -> pd.DataFrame:
     """
     if source is None:
         source = DEFAULT_FILE
+    if isinstance(source, (bytes, bytearray)):
+        source = io.BytesIO(source)
     df = pd.read_excel(source, sheet_name=0, engine="openpyxl")
 
     missing = [c for c in REQUIRED_COLUMNS if c not in df.columns]
