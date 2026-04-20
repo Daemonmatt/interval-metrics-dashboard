@@ -1,0 +1,28 @@
+# Never commit real data — this dashboard always expects an uploaded file on the cloud.
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+!sample_data/*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Streamlit local secrets (if you add any)
+.streamlit/secrets.toml
