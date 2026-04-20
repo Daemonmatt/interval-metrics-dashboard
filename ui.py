@@ -51,19 +51,45 @@ def filter_summary(df: pd.DataFrame) -> None:
 
 
 def _load_from_sidebar() -> Optional[pd.DataFrame]:
+    """Sidebar loader.
+
+    The uploaded file is persisted in `st.session_state` so it survives
+    navigation between multi-page app pages. Without this bridge, each page
+    renders its own uploader and the file appears to "disappear" on nav.
+    """
     st.sidebar.markdown("### Data source")
-    uploaded = st.sidebar.file_uploader("Upload Excel export", type=["xlsx"])
+
+    uploaded = st.sidebar.file_uploader(
+        "Upload Excel export",
+        type=["xlsx"],
+        key="uploader_widget",
+    )
+    if uploaded is not None:
+        st.session_state["uploaded_bytes"] = uploaded.getvalue()
+        st.session_state["uploaded_name"] = uploaded.name
+
+    bytes_data: Optional[bytes] = st.session_state.get("uploaded_bytes")
+    name: Optional[str] = st.session_state.get("uploaded_name")
+
+    if bytes_data is not None:
+        st.sidebar.caption(f"Loaded: {name}")
+        if st.sidebar.button("Clear uploaded file", use_container_width=True):
+            st.session_state.pop("uploaded_bytes", None)
+            st.session_state.pop("uploaded_name", None)
+            st.session_state.pop("uploader_widget", None)
+            st.rerun()
+
     default_exists = os.path.exists(loader.DEFAULT_FILE)
     use_default = st.sidebar.checkbox(
         "Use default file",
-        value=(uploaded is None and default_exists),
+        value=(bytes_data is None and default_exists),
         help=loader.DEFAULT_FILE,
-        disabled=not default_exists and uploaded is None,
+        disabled=not default_exists and bytes_data is not None,
     )
 
     try:
-        if uploaded is not None:
-            return loader.load_data(uploaded.getvalue())
+        if bytes_data is not None:
+            return loader.load_data(bytes_data)
         if use_default and default_exists:
             return loader.load_data(loader.DEFAULT_FILE)
     except Exception as exc:  # noqa: BLE001
