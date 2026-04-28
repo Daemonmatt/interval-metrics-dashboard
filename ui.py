@@ -44,6 +44,7 @@ def filter_summary(df: pd.DataFrame) -> None:
     if dmin and dmax:
         chips.append(f"Dates &middot; {dmin} to {dmax}")
     chips.append(f"Teams &middot; {df['team'].nunique()}")
+    chips.append(f"Specializations &middot; {df['case_specialization'].nunique()}")
     chips.append(f"Origins &middot; {df['origin'].nunique()}")
     chips.append(f"Records &middot; {len(df):,}")
     html_str = "".join(f'<span class="cx-filter-chip">{c}</span>' for c in chips)
@@ -121,6 +122,18 @@ def sidebar_filters(df: pd.DataFrame) -> pd.DataFrame:
     origins = sorted(df["origin"].dropna().unique().tolist())
     picked_origins = st.sidebar.multiselect("Origins", origins, default=origins)
 
+    # Specialization options narrow as teams are unselected so the list stays sensible.
+    specs_pool = (
+        df[df["team"].isin(picked_teams)] if picked_teams else df
+    )["case_specialization"].dropna().unique().tolist()
+    specs = sorted(specs_pool)
+    picked_specs = st.sidebar.multiselect(
+        "Specializations",
+        specs,
+        default=specs,
+        help="Filters by case_specialization. Reduces with team selection above.",
+    )
+
     hour_range = st.sidebar.slider(
         "Hour range",
         min_value=0,
@@ -139,6 +152,7 @@ def sidebar_filters(df: pd.DataFrame) -> pd.DataFrame:
         df,
         teams=picked_teams or None,
         origins=picked_origins or None,
+        specializations=picked_specs or None,
         date_range=date_range,
         hour_range=hour_range,
     )

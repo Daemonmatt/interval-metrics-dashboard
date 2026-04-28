@@ -93,6 +93,7 @@ def filter_frame(
     df: pd.DataFrame,
     teams: Optional[list[str]] = None,
     origins: Optional[list[str]] = None,
+    specializations: Optional[list[str]] = None,
     date_range: Optional[tuple] = None,
     hour_range: Optional[tuple[int, int]] = None,
 ) -> pd.DataFrame:
@@ -101,6 +102,8 @@ def filter_frame(
         out = out[out["team"].isin(teams)]
     if origins:
         out = out[out["origin"].isin(origins)]
+    if specializations:
+        out = out[out["case_specialization"].isin(specializations)]
     if date_range and len(date_range) == 2 and all(date_range):
         d0, d1 = date_range
         out = out[(out["date"] >= d0) & (out["date"] <= d1)]
