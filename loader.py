@@ -27,6 +27,7 @@ REQUIRED_COLUMNS = [
     "origin",
     "created_at",
     "created_at_interval",
+    "case_specialization",
     "Chat Volume (Actual)",
     "Email Volume (Actual)",
     "Chat TTA",
@@ -83,6 +84,7 @@ def load_data(source: Union[str, Path, bytes, None] = None) -> pd.DataFrame:
 
     df["team"] = df["team"].fillna("Unknown")
     df["origin"] = df["origin"].fillna("Unknown")
+    df["case_specialization"] = df["case_specialization"].fillna("Unspecified")
 
     return df
 

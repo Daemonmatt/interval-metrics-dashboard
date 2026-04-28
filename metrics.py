@@ -71,6 +71,24 @@ def by_team(df: pd.DataFrame) -> pd.DataFrame:
     return _by(df, ["team"]).sort_values("chat_volume", ascending=False)
 
 
+def by_specialization(df: pd.DataFrame) -> pd.DataFrame:
+    out = _by(df, ["case_specialization"])
+    out = out.rename(columns={"case_specialization": "specialization"})
+    return out.sort_values("chat_volume", ascending=False)
+
+
+def by_team_specialization(df: pd.DataFrame) -> pd.DataFrame:
+    out = _by(df, ["team", "case_specialization"])
+    out = out.rename(columns={"case_specialization": "specialization"})
+    return out.sort_values(["team", "chat_volume"], ascending=[True, False])
+
+
+def by_specialization_hour(df: pd.DataFrame) -> pd.DataFrame:
+    out = _by(df, ["case_specialization", "hour"])
+    out = out.rename(columns={"case_specialization": "specialization"})
+    return out
+
+
 def by_team_hour(df: pd.DataFrame) -> pd.DataFrame:
     return _by(df, ["team", "hour"])
 
